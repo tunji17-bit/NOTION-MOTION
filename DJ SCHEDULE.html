@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DJ Gig Planner — Notion HTML Export</title>
+  <style>
+    /* Surreal Live inspired aesthetic — clean, dark card-based layout */
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#ff6b6b;--paid:#16a34a;--pending:#f59e0b;--notpaid:#ef4444}
+    body{font-family:Inter, Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial; margin:0; background:linear-gradient(180deg,#071024 0%, #081426 100%); color:#e6eef8}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#2b6cb0,#7b2cbf);display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    /* Controls row */
+    .controls{display:flex;gap:8px;align-items:center;margin:18px 0}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .btn.primary{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.06);color:white}
+
+    /* Calendar grid */
+    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .day{background:var(--card);min-height:120px;border-radius:12px;padding:10px;box-shadow:0 4px 12px rgba(2,6,23,0.6)}
+    .day .date{font-weight:700;color:var(--muted);font-size:13px}
+    .event{margin-top:8px;padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);font-size:13px}
+    .event h3{margin:0;font-size:13px}
+    .meta{font-size:12px;color:var(--muted);margin-top:6px}
+    .chip{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;margin-top:8px}
+    .paid{background:rgba(22,163,74,0.12);color:var(--paid);border:1px solid rgba(22,163,74,0.12)}
+    .pending{background:rgba(245,158,11,0.08);color:var(--pending);border:1px solid rgba(245,158,11,0.08)}
+    .notpaid{background:rgba(239,68,68,0.08);color:var(--notpaid);border:1px solid rgba(239,68,68,0.08)}
+
+    /* Right-side panel mimic */
+    .layout{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:linear-gradient(180deg,#071024,#061223);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .panel h4{margin:0 0 10px 0}
+    .list{display:flex;flex-direction:column;gap:10px}
+
+    /* Responsive */
+    @media (max-width:960px){.layout{grid-template-columns:1fr} .calendar{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">DJ</div>
+      <div>
+        <h1>DJ Gig Planner — Notion-ready HTML Export</h1>
+        <p class="lead">Import this HTML into Notion (Import → HTML) to create a page you can copy into your workspace. The content below is structured so Notion will translate cards, headings and lists into blocks.</p>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div>
+        <div class="controls">
+          <button class="btn primary" onclick="downloadCSV()">Download CSV (Notion import friendly)</button>
+          <button class="btn" onclick="toggleExample()">Toggle Example Events</button>
+        </div>
+
+        <div class="calendar" id="calendar">
+          <!-- Week 1 -->
+          <div class="day"><div class="date">Mon 1</div></div>
+          <div class="day"><div class="date">Tue 2</div></div>
+          <div class="day"><div class="date">Wed 3</div></div>
+          <div class="day"><div class="date">Thu 4</div></div>
+          <div class="day"><div class="date">Fri 5</div></div>
+          <div class="day" data-day="6"><div class="date">Sat 6</div>
+            <div class="event" data-event-id="1">
+              <h3>Amapiano Vibes</h3>
+              <div class="meta">Lounge X, Richmond — 10 PM – 12 AM</div>
+              <div class="chip notpaid">❌ Not Paid</div>
+            </div>
+          </div>
+          <div class="day"><div class="date">Sun 7</div></div>
+
+          <!-- Week 2 -->
+          <div class="day"><div class="date">Mon 8</div></div>
+          <div class="day"><div class="date">Tue 9</div></div>
+          <div class="day"><div class="date">Wed 10</div></div>
+          <div class="day"><div class="date">Thu 11</div></div>
+          <div class="day"><div class="date">Fri 12</div></div>
+          <div class="day" data-day="13"><div class="date">Sat 13</div>
+            <div class="event" data-event-id="2">
+              <h3>Afro Fusion Friday</h3>
+              <div class="meta">Soho Bar, Fitzroy — 12:30 AM – 2:30 AM</div>
+              <div class="chip paid">✅ Paid</div>
+            </div>
+          </div>
+          <div class="day"><div class="date">Sun 14</div></div>
+
+          <!-- Week 3 -->
+          <div class="day"><div class="date">Mon 15</div></div>
+          <div class="day"><div class="date">Tue 16</div></div>
+          <div class="day"><div class="date">Wed 17</div></div>
+          <div class="day"><div class="date">Thu 18</div></div>
+          <div class="day"><div class="date">Fri 19</div></div>
+          <div class="day" data-day="20"><div class="date">Sat 20</div>
+            <div class="event" data-event-id="3">
+              <h3>Afrobeats & Friends</h3>
+              <div class="meta">SkyBar, Docklands — 11:30 PM – 1:30 AM</div>
+              <div class="chip pending">⚠️ Pending</div>
+            </div>
+          </div>
+          <div class="day"><div class="date">Sun 21</div></div>
+
+          <!-- Rest of month -->
+          <div class="day"><div class="date">Mon 22</div></div>
+          <div class="day"><div class="date">Tue 23</div></div>
+          <div class="day"><div class="date">Wed 24</div></div>
+          <div class="day"><div class="date">Thu 25</div></div>
+          <div class="day"><div class="date">Fri 26</div></div>
+          <div class="day"><div class="date">Sat 27</div></div>
+          <div class="day"><div class="date">Sun 28</div></div>
+
+          <div class="day"><div class="date">Mon 29</div></div>
+          <div class="day"><div class="date">Tue 30</div></div>
+          <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h4>Quick Actions</h4>
+        <div class="list">
+          <div>
+            <strong>Add new event</strong>
+            <p class="lead" style="margin:6px 0 0">When imported to Notion, create a linked database (Table) and paste values from the CSV for full database functionality.</p>
+          </div>
+          <div>
+            <strong>Views to create in Notion</strong>
+            <ul style="color:var(--muted);margin:8px 0 0;padding-left:18px">
+              <li>Calendar View — main planning</li>
+              <li>Table View — payments + amounts</li>
+              <li>Board View — status (Paid / Pending / Not Paid)</li>
+              <li>Gallery View — flyer covers & quick glance</li>
+            </ul>
+          </div>
+          <div>
+            <strong>Import tip</strong>
+            <p class="lead" style="margin:6px 0 0">Use the CSV download (button) to import as a database. The HTML is best for copy-pasting visual content into Notion pages.</p>
+          </div>
+        </div>
+
+        <h4 style="margin-top:14px">Sample Payments</h4>
+        <div class="list">
+          <div class="chip paid">✅ Paid — $350 — Afro Fusion Friday</div>
+          <div class="chip notpaid">❌ Not Paid — $250 — Amapiano Vibes</div>
+          <div class="chip pending">⚠️ Pending — $400 — Afrobeats & Friends</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:22px;color:var(--muted);font-size:13px">Template generated for easy import. After importing, create a Notion linked database to gain filtering, sorting, and calendar sync.</footer>
+
+    <script>
+      const events = [
+        {Event: 'Amapiano Vibes', Venue: 'Lounge X, Richmond', Date: '2025-09-06', 'Set Time': '10 PM – 12 AM', Status: 'Not Paid', Amount: 250, Notes: ''},
+        {Event: 'Afro Fusion Friday', Venue: 'Soho Bar, Fitzroy', Date: '2025-09-13', 'Set Time': '12:30 AM – 2:30 AM', Status: 'Paid', Amount: 350, Notes: 'Confirm playlist'},
+        {Event: 'Afrobeats & Friends', Venue: 'SkyBar, Docklands', Date: '2025-09-20', 'Set Time': '11:30 PM – 1:30 AM', Status: 'Pending', Amount: 400, Notes: 'High-profile'}
+      ];
+
+      function downloadCSV(){
+        const header = Object.keys(events[0]);
+        const rows = events.map(e => header.map(h => JSON.stringify(e[h] ?? '')).join(','));
+        const csv = [header.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'Notion_DJ_Gig_Template_September_2025.csv'; a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function toggleExample(){
+        const nodes = document.querySelectorAll('[data-event-id]');
+        nodes.forEach(n => n.style.display = n.style.display === 'none' ? 'block' : 'none');
+      }
+
+      // Hide events by default if you want a blank import
+      //document.querySelectorAll('[data-event-id]').forEach(n=>n.style.display='none');
+    </script>
+  </div>
+</body>
+</html>
